@@ -11,10 +11,11 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute) {
     const token = await getToken({ req: request })
 
-    // If the user is not authenticated, redirect to the login page
+    // Check if the user is not authenticated, redirect to the login page
     if (!token) {
       const url = new URL("/auth/login", request.url)
-      url.searchParams.set("callbackUrl", encodeURI(pathname))
+      // Properly encode the pathname to ensure it works as a callback URL
+      url.searchParams.set("callbackUrl", pathname)
       return NextResponse.redirect(url)
     }
   }

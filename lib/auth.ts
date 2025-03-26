@@ -27,6 +27,15 @@ export const authOptions: NextAuthOptions = {
           response_type: "code",
         },
       },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          emailVerified: profile.email_verified ? new Date() : null,
+        }
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -66,12 +75,14 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile }) {
       // Initial sign in
       if (account && user) {
+        // Include the user image in the token
         return {
           ...token,
           id: user.id,
+          picture: user.image || profile?.picture || token.picture,
         }
       }
 
@@ -81,6 +92,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
+        // Ensure the image is included in the session
+        session.user.image = (token.picture as string) || null
       }
       return session
     },
@@ -89,7 +102,8 @@ export const authOptions: NextAuthOptions = {
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      // Default to the dashboard if no callback URL is provided
+      return `${baseUrl}/dashboard`
     },
   },
 }

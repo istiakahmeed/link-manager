@@ -59,8 +59,12 @@ export function LoginForm() {
           description: "You have been logged in",
         })
 
-        // Use router.push instead of relying on NextAuth redirect
-        router.push("/dashboard")
+        // Get the callback URL from the query parameters
+        const searchParams = new URLSearchParams(window.location.search)
+        const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+
+        // Redirect to the callback URL
+        router.push(callbackUrl)
         router.refresh()
       }
     } catch (error) {
@@ -74,11 +78,16 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true)
-      await signIn("google", { callbackUrl: "/dashboard" })
+
+      // Get the callback URL from the query parameters
+      const searchParams = new URLSearchParams(window.location.search)
+      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+
+      // Pass the callback URL to the signIn function
+      await signIn("google", { callbackUrl })
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google. Please try again.")
-    } finally {
       setIsGoogleLoading(false)
     }
   }
