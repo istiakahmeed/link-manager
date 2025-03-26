@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+
 import { useSession } from "next-auth/react";
 import LoginForm from "@/components/auth/login-form";
+import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
