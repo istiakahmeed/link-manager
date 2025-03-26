@@ -1,29 +1,39 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname } = request.nextUrl;
 
-  // Check if the path starts with /dashboard or /profile
-  const isProtectedRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/profile")
-
-  if (isProtectedRoute) {
-    const token = await getToken({ req: request })
-
-    // Check if the user is not authenticated, redirect to the login page
-    if (!token) {
-      const url = new URL("/auth/login", request.url)
-      // Properly encode the pathname to ensure it works as a callback URL
-      url.searchParams.set("callbackUrl", pathname)
-      return NextResponse.redirect(url)
-    }
+  // Don't redirect auth pages in an infinite loop
+  if (pathname.startsWith("/auth/")) {
+    return NextResponse.next();
   }
 
-  return NextResponse.next()
+  // Check if user is authenticated
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  // Get auth state from the request URL
+  const isAuthenticated = !!token;
+
+  // Protect routes that require authentication
+  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  if (isProtectedRoute && !isAuthenticated) {
+    const url = new URL("/auth/login", request.url);
+    url.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*"],
-}
-
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
