@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import LoginForm from "@/components/auth/login-form";
-import { useRouter } from "next/navigation"; // Use next/navigation, not next/router
+import { redirect, useRouter } from "next/navigation"; // Use next/navigation, not next/router
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
@@ -14,17 +14,9 @@ export default function LoginPage() {
 
   const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard";
   const error = searchParams?.get("error") || "";
-
-  useEffect(() => {
-    // Only redirect if we're sure the session is loaded and user is authenticated
-    if (status === "authenticated") {
-      router.push(callbackUrl);
-    } else if (status !== "loading") {
-      // Only set loading to false after we've determined the session status
-      setIsLoading(false);
-    }
-  }, [status, router, callbackUrl]);
-
+  if (session) {
+    redirect("/dashboard");
+  }
   // Show loading state while checking authentication
   if (isLoading) {
     return <div>Loading...</div>;
@@ -40,7 +32,7 @@ export default function LoginPage() {
             : "An error occurred. Please try again."}
         </div>
       )}
-      <LoginForm callbackUrl={callbackUrl} />
+      <LoginForm />
     </div>
   );
 }

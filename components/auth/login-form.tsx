@@ -28,7 +28,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginForm({ callbackUrl = "/dashboard" }) {
+export default function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -51,7 +51,6 @@ export default function LoginForm({ callbackUrl = "/dashboard" }) {
         redirect: false,
         email: data.email,
         password: data.password,
-        callbackUrl,
       });
 
       if (result?.error) {
@@ -70,7 +69,7 @@ export default function LoginForm({ callbackUrl = "/dashboard" }) {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true);
-      await signIn("google", { callbackUrl });
+      await signIn("google");
     } catch (error) {
       console.error("Google sign in error:", error);
       setError("Failed to sign in with Google. Please try again.");
