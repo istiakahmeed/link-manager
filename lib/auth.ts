@@ -110,13 +110,17 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      // Default to the dashboard if no callback URL is provided
-      return `${baseUrl}/dashboard`;
+    redirect({ url, baseUrl }) {
+      // Always redirect to dashboard after sign in
+      if (url.startsWith(baseUrl)) {
+        if (url.includes("/auth/login")) {
+          return `${baseUrl}/dashboard`;
+        }
+        return url;
+      } else if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      return baseUrl;
     },
   },
 };

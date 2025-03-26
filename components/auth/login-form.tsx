@@ -55,8 +55,11 @@ export default function LoginForm() {
 
       if (result?.error) {
         setError(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
+      } else {
+        // Force redirect to dashboard regardless of result.url
+        router.push("/dashboard");
+        // Refresh is needed to ensure we get a clean state
+        router.refresh();
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -69,7 +72,10 @@ export default function LoginForm() {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true);
-      await signIn("google");
+      // Specify where to redirect after Google auth
+      await signIn("google", {
+        callbackUrl: "/dashboard",
+      });
     } catch (error) {
       console.error("Google sign in error:", error);
       setError("Failed to sign in with Google. Please try again.");
