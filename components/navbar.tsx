@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LinkIcon, Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -93,19 +92,17 @@ export function Navbar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="ml-2 rounded-full">
-                        <Avatar className="h-8 w-8">
-                          {session.user?.image ? (
-                            <AvatarImage
-                              src={session.user.image}
-                              alt={session.user.name || "User"}
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <AvatarFallback>
-                              {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
+                        {session.user?.image ? (
+                          <img
+                            src={session.user.image || "/placeholder.svg"}
+                            alt={session.user.name || "User"}
+                            className="h-8 w-8 rounded-full"
+                          />
+                        ) : (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
+                          </div>
+                        )}
                         <span className="sr-only">User menu</span>
                       </Button>
                     </DropdownMenuTrigger>
