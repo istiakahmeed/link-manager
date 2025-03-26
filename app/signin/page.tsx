@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+"use client";
 
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import LoginForm from "@/components/auth/login-form";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation"; // Use next/navigation, not next/router
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
