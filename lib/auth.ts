@@ -1,10 +1,10 @@
-import type { NextAuthOptions } from "next-auth"
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
-import CredentialsProvider from "next-auth/providers/credentials"
-import GoogleProvider from "next-auth/providers/google"
-import clientPromise from "@/lib/mongodb-client"
-import { compare } from "bcryptjs"
-import { getUserByEmail } from "@/lib/user-service"
+import type { NextAuthOptions } from "next-auth";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import clientPromise from "@/lib/mongodb-client";
+import { compare } from "bcryptjs";
+import { getUserByEmail } from "@/lib/user-service";
 
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
           email: profile.email,
           image: profile.picture,
           emailVerified: profile.email_verified ? new Date() : null,
-        }
+        };
       },
     }),
     CredentialsProvider({
@@ -46,19 +46,22 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
-            return null
+            return null;
           }
 
-          const user = await getUserByEmail(credentials.email)
+          const user = await getUserByEmail(credentials.email);
 
           if (!user || !user.password) {
-            return null
+            return null;
           }
 
-          const isPasswordValid = await compare(credentials.password, user.password)
+          const isPasswordValid = await compare(
+            credentials.password,
+            user.password
+          );
 
           if (!isPasswordValid) {
-            return null
+            return null;
           }
 
           return {
@@ -66,15 +69,25 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             image: user.image,
-          }
+          };
         } catch (error) {
-          console.error("Auth error:", error)
-          return null
+          console.error("Auth error:", error);
+          return null;
         }
       },
     }),
   ],
   callbacks: {
+    // Add a signIn callback to handle account linking
+    async signIn({ user, account, profile }) {
+      // If this is an OAuth sign-in, allow it to proceed
+      if (account?.provider === "google") {
+        return true;
+      }
+
+      // For credentials provider, proceed as normal
+      return true;
+    },
     async jwt({ token, user, account, profile }) {
       // Initial sign in
       if (account && user) {
@@ -82,29 +95,28 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: user.id,
-          picture: user.image || profile?.picture || token.picture,
-        }
+          picture: user.image || token.picture,
+        };
       }
 
       // Return previous token if the user hasn't changed
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string
+        session.user.id = token.id as string;
         // Ensure the image is included in the session
-        session.user.image = (token.picture as string) || null
+        session.user.image = (token.picture as string) || null;
       }
-      return session
+      return session;
     },
     async redirect({ url, baseUrl }) {
       // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url
+      else if (new URL(url).origin === baseUrl) return url;
       // Default to the dashboard if no callback URL is provided
-      return `${baseUrl}/dashboard`
+      return `${baseUrl}/dashboard`;
     },
   },
-}
-
+};
