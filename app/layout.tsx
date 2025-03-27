@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { NextAuthProvider } from "@/components/auth-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 // Primary font for body text
 const plexSans = IBM_Plex_Sans({
@@ -44,6 +45,7 @@ export default function RootLayout({
           >
             <Navbar />
             {children}
+            <Analytics />
             <Toaster />
           </ThemeProvider>
         </NextAuthProvider>
