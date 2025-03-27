@@ -83,9 +83,34 @@ export function Navbar() {
 
         {/* Logo - all screens (aligned left on mobile) */}
         <div className='flex mr-4 md:mr-6'>
-          <Link href='/' className='flex items-center gap-2'>
-            <LinkIcon className='h-5 w-5' />
-            <span className='font-bold text-sm sm:text-base'>Link Manager</span>
+          <Link
+            href='/'
+            className='flex items-center gap-2.5 transition-all hover:opacity-95 group'
+          >
+            <div className='relative flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-md group-hover:shadow-lg transition-shadow'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                className='h-4 w-4'
+              >
+                <circle cx='12' cy='12' r='10'></circle>
+                <path d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'></path>
+                <path d='M2 12h20'></path>
+              </svg>
+            </div>
+            <div className='flex flex-col leading-none'>
+              <span className='hidden md:block font-semibold tracking-tight text-sm sm:text-base'>
+                Link Manager
+              </span>
+              <span className='hidden md:block text-[10px] text-muted-foreground font-medium'>
+                Connect & Organize
+              </span>
+            </div>
           </Link>
         </div>
 
