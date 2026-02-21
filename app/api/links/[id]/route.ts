@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getLinkById, updateLink, deleteLink } from "@/lib/link-service";
+import { revalidatePath } from "next/cache";
 
 export async function GET(
   req: NextRequest,
@@ -88,6 +89,7 @@ export async function PATCH(
       linkType: body.linkType || "website",
     });
 
+    revalidatePath("/dashboard");
     return NextResponse.json({ success: true, link: updatedLink });
   } catch (error) {
     console.error("Error updating link:", error);
@@ -123,6 +125,7 @@ export async function DELETE(
 
     await deleteLink(id);
 
+    revalidatePath("/dashboard");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting link:", error);

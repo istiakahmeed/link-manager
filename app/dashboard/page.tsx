@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 import {
   getLinksByUserId,
   getUserTags,
@@ -63,7 +65,7 @@ export default async function DashboardPage({
       filteredLinks = filteredLinks.filter(
         (link) =>
           link.tags &&
-          link.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
+          link.tags.some((t) => t.toLowerCase() === tag.toLowerCase()),
       );
     }
 
@@ -71,7 +73,7 @@ export default async function DashboardPage({
       filteredLinks = filteredLinks.filter(
         (link) =>
           link.category &&
-          link.category.toLowerCase() === category.toLowerCase()
+          link.category.toLowerCase() === category.toLowerCase(),
       );
     }
 
@@ -79,7 +81,7 @@ export default async function DashboardPage({
       filteredLinks = filteredLinks.filter(
         (link) =>
           link.linkType &&
-          link.linkType.toLowerCase() === linkType.toLowerCase()
+          link.linkType.toLowerCase() === linkType.toLowerCase(),
       );
     }
 
@@ -92,10 +94,10 @@ export default async function DashboardPage({
           link.url.toLowerCase().includes(query.toLowerCase()) ||
           (link.tags &&
             link.tags.some((t) =>
-              t.toLowerCase().includes(query.toLowerCase())
+              t.toLowerCase().includes(query.toLowerCase()),
             )) ||
           (link.category &&
-            link.category.toLowerCase().includes(query.toLowerCase()))
+            link.category.toLowerCase().includes(query.toLowerCase())),
       );
     }
 
