@@ -5,7 +5,7 @@ import { getLinkById, updateLink, deleteLink } from "@/lib/link-service";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const link = await getLinkById(params.id);
+    const { id } = await params;
+    const link = await getLinkById(id);
 
     if (!link) {
       return NextResponse.json({ error: "Link not found" }, { status: 404 });
@@ -30,14 +31,14 @@ export async function GET(
     console.error("Error fetching link:", error);
     return NextResponse.json(
       { error: "Failed to fetch link" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -46,7 +47,8 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const link = await getLinkById(params.id);
+    const { id } = await params;
+    const link = await getLinkById(id);
 
     if (!link) {
       return NextResponse.json({ error: "Link not found" }, { status: 404 });
@@ -63,7 +65,7 @@ export async function PATCH(
     if (!body.url || !body.title) {
       return NextResponse.json(
         { error: "URL and title are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -73,11 +75,11 @@ export async function PATCH(
     } catch (e) {
       return NextResponse.json(
         { error: "Invalid URL format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const updatedLink = await updateLink(params.id, {
+    const updatedLink = await updateLink(id, {
       url: body.url,
       title: body.title,
       description: body.description || "",
@@ -91,14 +93,14 @@ export async function PATCH(
     console.error("Error updating link:", error);
     return NextResponse.json(
       { error: "Failed to update link", details: (error as any).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -107,7 +109,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const link = await getLinkById(params.id);
+    const { id } = await params;
+    const link = await getLinkById(id);
 
     if (!link) {
       return NextResponse.json({ error: "Link not found" }, { status: 404 });
@@ -118,14 +121,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await deleteLink(params.id);
+    await deleteLink(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting link:", error);
     return NextResponse.json(
       { error: "Failed to delete link" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
