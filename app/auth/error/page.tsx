@@ -22,6 +22,9 @@ export default function AuthErrorPage({
     case "OAuthAccountNotLinked":
       errorMessage = "This email is already associated with another account."
       break
+    case "Callback":
+      errorMessage = "There was a problem during sign-in. Please try again or use a different sign-in method."
+      break
     case "OAuthSignin":
     case "OAuthCallback":
     case "OAuthCreateAccount":

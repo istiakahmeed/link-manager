@@ -74,7 +74,11 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true)
-      await signIn("google", { callbackUrl: "/dashboard" })
+      setError(null)
+      await signIn("google", {
+        callbackUrl: "/dashboard",
+        redirect: true,
+      })
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google. Please try again.")
